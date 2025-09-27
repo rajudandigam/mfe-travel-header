@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
 	return (
@@ -6,8 +7,8 @@ export default function Header() {
 			<div style={brandStyle}>✈️ Travel Portal</div>
 
 			<nav style={navStyle}>
-				<button style={{ ...menuItem, ...(true && activeItem) }}>Home</button>
-				<button style={menuItem}>Trips</button>
+				<Link to="/" style={menuItem}>Home</Link>
+				<Link to="/trips" style={menuItem}>Trips</Link>
 				<button style={{ ...menuItem, ...disabledItem }}>Profile</button>
 				<button style={{ ...menuItem, ...disabledItem }}>Help</button>
 			</nav>
