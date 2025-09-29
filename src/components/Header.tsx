@@ -1,16 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function Header() {
+	const [tripCount, setTripCount] = useState<number>(0);
+
+	useEffect(() => {
+		function onIncrement(e: Event) {
+			const delta = Math.max(1, Number((e as CustomEvent).detail?.delta ?? 1));
+			setTripCount((c) => Math.max(0, c + delta));
+		}
+
+		window.addEventListener('trips:increment', onIncrement as EventListener);
+
+		return () => {
+			window.removeEventListener('trips:increment', onIncrement as EventListener);
+		};
+	}, [tripCount]);
+
 	return (
 		<header style={headerStyle}>
 			<div style={brandStyle}>✈️ Travel Portal</div>
 
 			<nav style={navStyle}>
-				<Link to="/" style={menuItem}>Home</Link>
-				<Link to="/trips" style={menuItem}>Trips</Link>
-				<button style={{ ...menuItem, ...disabledItem }}>Profile</button>
-				<button style={{ ...menuItem, ...disabledItem }}>Help</button>
+				<Link to="/" style={{ ...menuItem, ...(true && activeItem) }}>Home</Link>
+
+				<button style={{ ...menuItem }} title="Coming soon">Drafts
+					<span style={badgeStyle}>
+						{tripCount}
+					</span>
+				</button>
+
+				<Link to="/trips" style={menuItem}>
+					<span style={{ position: 'relative', display: 'inline-flex', alignItems: 'center' }}>
+						Trips
+					</span>
+				</Link>
+
+				<button style={{ ...menuItem, ...disabledItem }} title="Coming soon">Profile</button>
+				<button style={{ ...menuItem, ...disabledItem }} title="Coming soon">Help</button>
 			</nav>
 
 			<div style={{ width: 100 }}></div>
@@ -18,7 +45,6 @@ export default function Header() {
 	);
 }
 
-/* —— Styles —— */
 const fontStack =
 	`Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial`;
 
@@ -57,6 +83,7 @@ const menuItem: React.CSSProperties = {
 	borderRadius: 10,
 	cursor: 'pointer',
 	transition: 'background 0.2s, color 0.2s',
+	color: '#fff',
 };
 
 const activeItem: React.CSSProperties = {
@@ -64,6 +91,22 @@ const activeItem: React.CSSProperties = {
 };
 
 const disabledItem: React.CSSProperties = {
-	opacity: 0.4,
+	opacity: 0.45,
 	cursor: 'not-allowed',
+};
+
+const badgeStyle: React.CSSProperties = {
+	display: 'inline-flex',
+	alignItems: 'center',
+	justifyContent: 'center',
+	marginLeft: 8,
+	minWidth: 22,
+	height: 22,
+	padding: '0 6px',
+	borderRadius: 999,
+	background: '#ef4444',
+	color: '#fff',
+	fontWeight: 800,
+	fontSize: 12,
+	boxShadow: '0 1px 4px rgba(0,0,0,0.25)',
 };
